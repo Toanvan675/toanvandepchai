@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nguyễn Văn Toàn</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(-45deg,#0f172a,#1e293b,#0f172a,#312e81);
+    background-size:400% 400%;
+    animation:bg 12s ease infinite;
+    color:white;
+    overflow-x:hidden;
+}
+
+@keyframes bg{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.particles{
+    position:fixed;
+    width:100%;
+    height:100%;
+    z-index:-1;
+}
+
+header{
+    text-align:center;
+    padding:80px 20px;
+}
+
+.avatar{
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    background:linear-gradient(45deg,#00f5ff,#7c3aed);
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:60px;
+    font-weight:bold;
+    box-shadow:0 0 30px cyan;
+    animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-15px);}
+}
+
+h1{
+    margin-top:20px;
+    font-size:3rem;
+}
+
+.info{
+    margin-top:15px;
+    font-size:1.1rem;
+    opacity:0.9;
+}
+
+.section{
+    max-width:1100px;
+    margin:auto;
+    padding:30px;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:30px;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 20px rgba(255,255,255,0.2);
+}
+
+.socials{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    justify-content:center;
+}
+
+.socials a{
+    text-decoration:none;
+    color:white;
+    padding:12px 25px;
+    border-radius:12px;
+    background:linear-gradient(45deg,#06b6d4,#7c3aed);
+    transition:0.3s;
+}
+
+.socials a:hover{
+    transform:scale(1.08);
+}
+
+.uni-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    justify-content:center;
+}
+
+.uni-btn{
+    padding:12px 25px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    color:white;
+    font-size:16px;
+    background:linear-gradient(45deg,#2563eb,#7c3aed);
+    transition:0.3s;
+}
+
+.uni-btn:hover{
+    transform:scale(1.05);
+}
+
+.result{
+    margin-top:25px;
+    display:none;
+    animation:fade 0.5s;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.result ul{
+    margin-top:15px;
+    padding-left:25px;
+}
+
+footer{
+    text-align:center;
+    padding:40px;
+    opacity:0.8;
+}
+</style>
+</head>
+<body>
+
+<canvas class="particles" id="particles"></canvas>
+
+<header>
+    <div class="avatar">NT</div>
+    <h1>Nguyễn Văn Toàn</h1>
+
+    <div class="info">
+        🎂 Ngày sinh: 01/01/2008 <br>
+        📚 Học tại THPT TOB <br>
+        📧 toanvan675@gmail.com <br>
+        📞 0934563947 <br>
+        🌍 IELTS 6.5 (Quy đổi 9-10) <br>
+        "A01" : 8.5 Toán | 6.75 Lý | 7.25 Tiếng anh <br>
+    </div>
+</header>
+
+<section class="section">
+
+    <div class="card">
+        <h2>🌐 Liên kết cá nhân</h2>
+        <br>
+
+        <div class="socials" id="socialButtons"></div>
+    </div>
+
+    <div class="card">
+        <h2>🎓 Các ngành tại các trường đại học đã đỗ</h2>
+        <br>
+
+        <div class="uni-buttons" id="buttons"></div>
+
+        <div class="result card" id="resultBox">
+            <h3 id="uniName"></h3>
+            <ul id="majors"></ul>
+        </div>
+    </div>
+
+</section>
+
+<footer>
+    © 2026 Nguyễn Văn Toàn
+</footer>
+
+<script>
+
+/*
+=========================================
+THÊM / SỬA LINK MẠNG XÃ HỘI TẠI ĐÂY
+=========================================
+*/
+const socialLinks = {
+    "Facebook": "https://www.facebook.com/toanvandepchai",
+    "YouTube": "https://youtube.com/yourprofile",
+    "TikTok": "https://www.tiktok.com/@lhat3nj99er",
+    "Instagram": "https://www.instagram.com/watermel0ncat/",
+    "Discord": "https://discordapp.com/users/716980341503426631",
+};
+
+const socialContainer = document.getElementById("socialButtons");
+
+for (let platform in socialLinks) {
+    if (socialLinks[platform] !== "") { 
+        const btn = document.createElement("a");
+        btn.href = socialLinks[platform];
+        btn.target = "_blank"; 
+        btn.innerText = platform;
+        socialContainer.appendChild(btn);
+    }
+}
+
+/*
+=========================================
+THÊM TRƯỜNG ĐẠI HỌC
+=========================================
+*/
+
+const universities = {
+   "PTIT: Học Viện CN Bưu Chính Viễn Thông": [
+        "--- PTIT 2025 (Đỗ bằng Học bạ + IELTS) ---",
+        "Báo chí: 25.9467",
+        "Truyền thông đa phương tiện (CLC): 25.9333",
+        "Công nghệ đa phương tiện: 26.8571",
+        "Thiết kế và phát triển Game: 26.4867",
+        "Quản trị kinh doanh: 26",
+        "Logistics và QTCU: 27",
+        "Marketing: 26.8571",
+        "Marketing (chất lượng cao): 25.5",
+        "Quan hệ công chúng: 26.48",
+        "Công nghệ tài chính (Fintech): 26.5929",
+        "Kế toán: 25.8333",
+        "Kế toán chất lượng cao (ACCA): 24.8333",
+        "Kỹ thuật dữ liệu: 27.1429",
+        "Công nghệ thông tin (CLC): 26.5714",
+        "Công nghệ thông tin (Định hướng ứng dụng): 25.6333",
+        "Công nghệ thông tin Việt - Nhật: 26.4867",
+        "An toàn thông tin (CLC): 26.26",
+        "Công nghệ Kỹ thuật Điện, điện tử: 27.2928",
+        "AIoT (Kỹ thuật Điện tử viễn thông): 27.4786",
+        "--- PTIT 2024 (Đỗ bằng Học bạ + IELTS) ---",
+        "Báo chí: 26.73",
+        "Công nghệ đa phương tiện: 27",
+        "Công nghệ đa phương tiện (Liên kết Canberra): 24.3",
+        "Quản trị kinh doanh: 25.37",
+        "Marketing: 26.97",
+        "Marketing (clc): 25.51",
+        "Thương mại điện tử: 27.26",
+        "Công nghệ tài chính (Fintech): 26.7",
+        "CNTT (CLC): 22.83",
+        "Kế toán: 25.77",
+        "Kế toán (chuẩn quốc tế ACCA): 23.36",
+        "Kỹ thuật dữ liệu: 23.74",
+        "Công nghệ thông tin: 27.01",
+        "Công nghệ thông tin (clc): 25.64",
+        "Công nghệ thông tin (Liên kết La Trobe): 23.67",
+        "Công nghệ thông tin (Định hướng ứng dụng): 25.5",
+        "An toàn thông tin: 26.8",
+        "Công nghệ kỹ thuật Điện, điện tử: 25.07",
+        "Kỹ thuật Điện tử viễn thông: 26.42",
+        "--- Điểm thi THPT (2025) ---",
+        "Báo chí: 22.67",
+        "Truyền thông đa phương tiện (CLC): 22.65",
+        "Thiết kế và phát triển Game: 23.48",
+        "Quản trị kinh doanh: 22.75",
+        "Marketing (chất lượng cao): 22",
+        "Quan hệ công chúng: 23.47",
+        "Công nghệ tài chính (Fintech): 23.63",
+        "Kế toán: 22.5",
+        "Kế toán chất lượng cao (ACCA): 21",
+        "CNTT CLC: 23.6",
+        "CNTT (Định hướng ứng dụng): 22.2",
+        "CNTT Việt - Nhật: 23.48",
+        "An toàn thông tin CLC: 23.14"
+    ],
+
+   "AOF: Học Viện Tài Chính": [
+        "--- Phương thức xét tuyển ---",
+        "PT1 (Điểm thi THPT 2026): 25.1667",
+        "PT2 (Kết hợp) (8.5 (toán) + 9,75 (IELTS)+ 8.81111(Hba x26) + 0.14 (điểm vùng)): 27.20",
+        "--- Danh sách ngành Đỗ (PT2 - 2025 --> đỗ tất cả các ngành) ---",
+        "Tiếng Anh tài chính kế toán: 24.1",
+        "Kinh tế và quản lý nguồn lực tài chính: 25.43",
+        "Kinh tế chính trị - tài chính: 24.92",
+        "Kinh tế đầu tư: 25.56",
+        "Kinh tế đầu tư (ACCA): 22.82",
+        "Toán tài chính: 24.57",
+        "Quản trị doanh nghiệp / Du lịch: 24.98",
+        "Quản trị doanh nghiệp (ICAEW CFAB): 22.58",
+        "Marketing: 26.23",
+        "Digital Marketing (ICDL): 23.44",
+        "Thẩm định giá & BĐS: 21.51",
+        "Thẩm định giá & BĐS (ACCA): 21.0",
+        "Kinh doanh quốc tế (ICAEW CFAB): 24.89",
+        "Tài chính - Ngân hàng 1 (Thuế/Hải quan): 25.47",
+        "Tài chính - Ngân hàng 2 (TC Doanh nghiệp): 26.31",
+        "Tài chính - Ngân hàng 3 (Ngân hàng/Đầu tư): 25.4",
+        "Thuế và Quản trị thuế (ACCA): 21.0",
+        "Hải quan và Logistics (FIATA): 21.3",
+        "Phân tích tài chính (ICAEW CFAB): 21.0",
+        "Tài chính doanh nghiệp (ACCA): 21.0",
+        "Ngân hàng (ICAEW CFAB): 21.0",
+        "Đầu tư tài chính (ICAEW CFAB): 21.0",
+        "Tài chính bảo hiểm: 22.56",
+        "Kế toán (DN/Công): 25.01",
+        "Kế toán doanh nghiệp (ACCA): 21.5",
+        "Kế toán quản trị (CMA): 21.0",
+        "Kế toán công (ACCA): 21.5",
+        "Kiểm toán: 26.6",
+        "Kiểm toán (ICAEW CFAB): 21.5",
+        "Quản lý tài chính công: 22.55",
+        "Tin học tài chính kế toán: 25.07",
+        "Luật kinh doanh: 25.12",
+        "Khoa học dữ liệu trong tài chính: 25.52",
+        "Trí tuệ nhân tạo trong tài chính kế toán: 24.97"
+    ],
+
+    "UTC: Đại học Giao thông Vận tải": [
+        "--- Điểm xét tuyển ---",
+        "THPT (A01) + IELTS + điểm vùng: 24,725",
+        "--- Danh sách ngành Đỗ (2025) ---",
+        "Quản trị kinh doanh (Chương trình CLC Quản trị kinh doanh Việt-Anh) (22.63)",
+        "Kế toán (Chương trình CLC Kế toán tổng hợp Việt-Anh) (21.15)",
+        "Toán ứng dụng (chuyên ngành toán tin ứng dụng) (24.15)",
+        "Khoa học máy tính (24.35)",
+        "Kỹ thuật máy tính (theo hướng chuyên sâu vi mạch bán dẫn, bao gồm lớp kỹ sư tài năng) (23.95)",
+        "Công nghệ thông tin (23.7)",
+        "Công nghệ thông tin (Chương trình CLC Công nghệ thông tin Việt-Anh) (23.1)",
+        "Kỹ thuật cơ khí (CLC Cơ khí ô tô Việt-Anh) (22.78)",
+        "Kỹ thuật robot (chuyên ngành Kỹ thuật robot và trí tuệ nhân tạo) (24.2)",
+        "Kỹ thuật nhiệt (chuyên ngành: Kỹ thuật nhiệt lạnh và điều hòa kk) (24.71)",
+        "Kỹ thuật cơ khí động lực (chuyên ngành: Kỹ thuật phương tiện đường sắt, Máy xây dựng, Kỹ thuật máy động lực) (23.82)",
+        "Kỹ thuật cơ khí động lực (chuyên ngành Kỹ thuật phương tiện đường sắt tốc độ cao) (22.63)",
+        "Kỹ thuật ô tô (bao gồm lớp kỹ sư tài năng) (23.66)",
+        "Kỹ thuật điện (chuyên ngành: Trang bị điện trong công nghiệp và GTVT, Hệ thống điện trong giao thông và công nghiệp) (23.88)",
+        "Kỹ thuật điện (chuyên ngành Hệ thống điện đường sắt tốc độ cao, đường sắt đô thị) (23.39)",
+        "Kỹ thuật điện tử - viễn thông (chuyên ngành: Kỹ thuật viễn thông, Kỹ thuật thông tin và truyền thông, Kỹ thuật điện tử và tin học công nghiệp) (23.67)",
+        "Kỹ thuật môi trường (21.38)",
+        "Kiến trúc (23.52)",
+        "Quản lý đô thị và công trình (22.62)",
+        "Kỹ thuật xây dựng (chuyên ngành: Xây dựng dân dụng và công nghiệp, Kết cấu xây dựng, Vật liệu và công nghệ xây dựng) (22.44)",
+        "Kỹ thuật xây dựng (Chương trình tiên tiến Kỹ thuật xây dựng công trình GT) (19.71)",
+        "Kỹ thuật xây dựng công trình thủy (20.48)",
+        "Kỹ thuật xây dựng công trình giao thông (chuyên ngành: Cầu đường bộ, Đường bộ và kỹ thuật giao thông, Cầu và kết cấu, ĐS/ ĐS đô thị, XD sân bay cảng hàng không, Công trình GT đô thị) (17.94)",
+        "Kỹ thuật xây dựng công trình giao thông (chuyên ngành đường sắt tốc độ cao) (22.47)",
+        "Kỹ thuật xây dựng công trình giao thông (Chương trình CLC Cầu-Đường bộ Việt-Pháp) (20.01)",
+        "Kỹ thuật xây dựng công trình giao thông (Chương trình CLC Cầu-Đường bộ Việt-Anh) (17.25)",
+        "Kỹ thuật xây dựng công trình giao thông (Chương trình CLC Công trình giao thông đô thị Việt-Nhật) (16.19)",
+        "Kỹ thuật cơ sở hạ tầng (chuyên ngành: cơ sở hạ tầng kỹ thuật đô thị) (22.28)",
+        "Kỹ thuật an toàn giao thông (Ngành tuyển sinh các năm trước: Công nghệ kỹ thuật giao thông - Chuyên ngành: Kỹ thuật an toàn giao thông) (21.44)",
+        "Kinh tế xây dựng (chuyên ngành: Kinh tế và quản lý đầu tư xây dựng) (24.08)",
+        "Kinh tế xây dựng (Chương trình CLC Kinh tế xây dựng công trình GT Việt-Anh) (20.52)",
+        "Quản lý xây dựng (24.24)",
+        "Quản lý xây dựng (Chương trình CLC Quản lý xây dựng Việt - Anh) (16.36)",
+        "Quản trị dịch vụ du lịch và lữ hành (24.02)",
+        "Khai thác vận tải (chuyên ngành Khai thác và quản lý đường sắt tốc độ cao, Khai thác và quản lý đường sắt đô thị) (21.29)"
+    ],
+
+"BAV: Học Viện Ngân Hàng": [
+        "--- Điểm xét tuyển ---",
+        "Học bạ A01 (+Vùng): 26.085",
+        "HSA: 85 | IELTS: 6.5",
+        "THPTQG 2026 (A01 + IELTS + Vùng): 24.925",
+        "--- Danh sách Đỗ (31 Ngành) ---",
+        "Chất lượng cao Kế toán (21.57)",
+        "Kế toán (24.69)",
+        "Kế toán Sunderland, Anh (21)",
+        "Kiểm toán (24.88)",
+        "Chất lượng cao Ngân hàng (21.98)",
+        "Ngân hàng số (24.82)",
+        "Tài chính – Ngân hàng Sunderland, Anh (21)",
+        "Ngân hàng và Tài chính quốc tế Coventry (21)",
+        "Chất lượng cao Ngân hàng và Tài chính quốc tế (22.94)",
+        "Chất lượng cao Ngân hàng trung ương và CS công (21.2)",
+        "Chất lượng cao Quản trị kinh doanh (22.1)",
+        "Quản trị kinh doanh (24.38)",
+        "Quản trị du lịch (23.53)",
+        "Quản trị kinh doanh CityU, Hoa Kỳ (21.13)",
+        "Marketing số (ĐH Coventry, Anh) (21.44)",
+        "Chất lượng cao Marketing số (23.1)",
+        "Marketing (24.72)",
+        "Khoa học dữ liệu trong kinh tế và kinh doanh (23.84)",
+        "Kinh tế đầu tư (24.38)",
+        "Chất lượng cao Kinh tế đầu tư (22.13)",
+        "Chất lượng cao Tài chính (21.6)",
+        "Công nghệ tài chính (24.4)",
+        "Chất lượng cao Hoạch định và tư vấn tài chính (21.05)",
+        "Ngôn ngữ Anh Tài chính - Ngân hàng (23.41)",
+        "Chất lượng cao Ngôn ngữ Anh TC - NH (21.82)",
+        "Kinh doanh quốc tế Coventry (21)",
+        "Chất lượng cao Kinh doanh quốc tế (23.4)",
+        "Chất lượng cao Thương mại điện tử (23.48)",
+        "Công nghệ thông tin (23.53)",
+        "Hệ thống thông tin quản lý (24.75)",
+        "Chất lượng cao Hệ thống thông tin quản lý (21.95)"
+    ],
+
+"EPU: Đại học Điện lực": [
+        "--- Điểm xét tuyển ---",
+        "THPTQG 2026 (A01): 24.925 --> đỗ tất cả các ngành",
+        "--- Danh sách Đỗ Khối Kinh tế & Quản lý ---",
+        "Quản trị kinh doanh (21.5) | Quản lý công nghiệp (19.17)",
+        "Marketing (22.92) | Thương mại Điện tử (22.92)",
+        "Tài chính - Ngân hàng (21.83) | Công nghệ tài chính (16.5)",
+        "Kế toán (21.17) | Kiểm toán (20.23)",
+        "Logistics và Quản lý chuỗi cung ứng (22.92)",
+        "Quản trị dịch vụ Du lịch và Lữ hành (19.83)",
+        "Quản trị khách sạn (19.83)",
+        "--- Danh sách Đỗ Khối CNTT & Dữ liệu ---",
+        "Khoa học dữ liệu (16.5) | Toán tin (16.5)",
+        "Công nghệ thông tin (21.9)",
+        "Kỹ thuật máy tính (20.83) | Trí tuệ nhân tạo (20.5)",
+        "--- Danh sách Đỗ Khối Kỹ thuật ---",
+        "CNKT công trình xây dựng (19.17) | CN vật liệu (21.35)",
+        "CNKT cơ khí (22.58) | CNKT cơ điện tử (23.13)",
+        "CNKT ô tô (22.75) | Kỹ thuật Robot (18.17)",
+        "CNKT điện, điện tử (22.92) | CNKT điện tử - viễn thông (21.83)",
+        "CNKT điều khiển và tự động hoá (23.33)",
+        "CNKT năng lượng (18.5) | Quản lý năng lượng (18.17)",
+        "CNKT môi trường (18.17) | Kỹ thuật nhiệt (19.97)",
+        "CNKT hạt nhân (16.5)"
+    ],
+
+"VNUA: Học viện Nông nghiệp Việt Nam": [
+        "--- Trạng thái (2025) ---",
+        "Đỗ toàn bộ các ngành",
+        "--- Danh sách ngành Đỗ ---",
+        "Thú y (20.5)",
+        "Chăn nuôi thú y - Thủy sản (17)",
+        "Nông nghiệp và Cảnh quan (17)",
+        "Công nghệ kỹ thuật ô tô và Cơ điện tử (21)",
+        "Kỹ thuật cơ khí (21.5)",
+        "Kỹ thuật điện, Điện tử và Tự động hóa (22)",
+        "Logistics và Quản lý chuỗi cung ứng (21)",
+        "Kế toán, Quản trị kinh doanh và Thương mại (17)",
+        "Công nghệ sinh học và Công nghệ dược liệu (20.5)",
+        "Công nghệ thực phẩm và Chế biến (21)",
+        "Kinh tế và Quản lý (17)",
+        "Xã hội học (22)",
+        "Luật (23.3)",
+        "Công nghệ thông tin và Kỹ thuật số (19.6)",
+        "Quản lý đất đai, Bất động sản và Môi trường (18.3)",
+        "Khoa học Môi trường (21)",
+        "Ngôn ngữ Anh (21.2)",
+        "Sư phạm Công nghệ (24.1)",
+        "Du lịch (23.3)"
+    ],
+
+"Bổ túc (chắc chắn ko vào do đắt)": [
+        "Đại học Phenika (đỗ tất cả các ngành)",
+        "Đại học FPT (đỗ tất cả các ngành)",
+        "Đại học Đại Nam (đỗ tất cả các ngành)",
+        "Đại học Kinh Doanh Và CN HN (đỗ tất cả các ngành)"
+    ]
+
+};
+
+const buttonContainer = document.getElementById("buttons");
+const resultBox = document.getElementById("resultBox");
+const uniName = document.getElementById("uniName");
+const majors = document.getElementById("majors");
+
+for(let uni in universities){
+
+    const btn = document.createElement("button");
+    btn.className = "uni-btn";
+    btn.innerText = uni;
+
+    btn.onclick = () => {
+
+        uniName.innerText = uni;
+        majors.innerHTML = "";
+
+        universities[uni].forEach(major => {
+            const li = document.createElement("li");
+            li.innerText = major;
+            majors.appendChild(li);
+        });
+
+        resultBox.style.display = "block";
+    };
+
+    buttonContainer.appendChild(btn);
+}
+
+/* Particle Background */
+
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for(let i=0;i<100;i++){
+    particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*3,
+        dx:(Math.random()-0.5),
+        dy:(Math.random()-0.5)
+    });
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p=>{
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if(p.x<0||p.x>canvas.width) p.dx*=-1;
+        if(p.y<0||p.y>canvas.height) p.dy*=-1;
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle="rgba(255,255,255,0.8)";
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+});
+
+</script>
+
+</body>
+</html>

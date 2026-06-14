@@ -134,6 +134,12 @@ h1{
     transform:scale(1.05);
 }
 
+/* Nút Expand có style riêng biệt một chút cho nổi bật */
+#expandBtn {
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #10b981, #059669);
+}
+
 .result{
     margin-top:25px;
     display:none;
@@ -190,13 +196,17 @@ footer{
         <div class="socials" id="socialButtons"></div>
     </div>
 
-    <div class="card">
+    <div class="card" style="text-align: center;">
         <h2>🎓 Các ngành tại các trường đại học đã đỗ</h2>
         <br>
+        
+        <!-- Nút Expand -->
+        <button id="expandBtn" class="uni-btn">Hiển thị danh sách trường</button>
 
-        <div class="uni-buttons" id="buttons"></div>
+        <!-- Container danh sách trường (Được ẩn mặc định) -->
+        <div class="uni-buttons" id="buttons" style="display: none;"></div>
 
-        <div class="result card" id="resultBox">
+        <div class="result card" id="resultBox" style="text-align: left;">
             <h3 id="uniName"></h3>
             <ul id="majors"></ul>
         </div>
@@ -480,10 +490,27 @@ const universities = {
 
 };
 
+const expandBtn = document.getElementById("expandBtn");
 const buttonContainer = document.getElementById("buttons");
 const resultBox = document.getElementById("resultBox");
 const uniName = document.getElementById("uniName");
 const majors = document.getElementById("majors");
+
+/* LOGIC CHO NÚT EXPAND */
+expandBtn.addEventListener("click", () => {
+    // Nếu danh sách đang ẩn, đổi thành flex để hiển thị
+    if (buttonContainer.style.display === "none" || buttonContainer.style.display === "") {
+        buttonContainer.style.display = "flex";
+        expandBtn.innerText = "Thu gọn danh sách trường";
+    } else {
+        // Nếu đang hiển thị, đổi về none để ẩn đi
+        buttonContainer.style.display = "none";
+        expandBtn.innerText = "Hiển thị danh sách trường";
+        
+        // Ẩn luôn bảng chi tiết kết quả nếu nó đang mở
+        resultBox.style.display = "none";
+    }
+});
 
 for(let uni in universities){
 

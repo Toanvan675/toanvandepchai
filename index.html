@@ -535,39 +535,53 @@ for(let uni in universities){
     buttonContainer.appendChild(btn);
 }
 
-/* Particle Background */
-
+/*
+=========================================
+HIỆU ỨNG TUYẾT RƠI (FALLING SNOW)
+=========================================
+*/
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let particles = [];
+let snowflakes = [];
 
-for(let i=0;i<100;i++){
-    particles.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        r:Math.random()*3,
-        dx:(Math.random()-0.5),
-        dy:(Math.random()-0.5)
+// Khởi tạo các hạt tuyết
+for(let i=0; i<150; i++){
+    snowflakes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 3 + 1,           // Kích thước ngẫu nhiên (bán kính từ 1 đến 4)
+        dy: Math.random() * 2 + 1,          // Tốc độ rơi
+        dx: Math.random() * 1 - 0.5,        // Hướng bay ngang (gió nhẹ)
+        opacity: Math.random() * 0.8 + 0.2  // Độ mờ ngẫu nhiên để tạo chiều sâu
     });
 }
 
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    particles.forEach(p=>{
-        p.x += p.dx;
+    snowflakes.forEach(p => {
+        // Cập nhật vị trí
         p.y += p.dy;
+        p.x += p.dx;
 
-        if(p.x<0||p.x>canvas.width) p.dx*=-1;
-        if(p.y<0||p.y>canvas.height) p.dy*=-1;
+        // Nếu hạt tuyết rơi quá mép dưới màn hình, đưa nó vòng lên lại phía trên
+        if(p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+        }
 
+        // Nếu hạt tuyết bay ra khỏi mép trái/phải, đưa vòng lại
+        if(p.x > canvas.width) p.x = 0;
+        if(p.x < 0) p.x = canvas.width;
+
+        // Vẽ hạt tuyết
         ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle="rgba(255,255,255,0.8)";
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
         ctx.fill();
     });
 
@@ -576,6 +590,7 @@ function animate(){
 
 animate();
 
+// Cập nhật lại kích thước khi resize màn hình
 window.addEventListener("resize",()=>{
     canvas.width=window.innerWidth;
     canvas.height=window.innerHeight;

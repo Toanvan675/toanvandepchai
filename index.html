@@ -16,11 +16,25 @@
 }
 
 body{
-    background:linear-gradient(-45deg,#0f172a,#1e293b,#0f172a,#312e81);
-    background-size:400% 400%;
-    animation:bg 12s ease infinite;
     color:white;
     overflow-x:hidden;
+    background:
+    radial-gradient(circle at 20% 20%, rgba(80,120,255,0.5), transparent 25%),
+    radial-gradient(circle at 80% 30%, rgba(255,80,200,0.4), transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.12), transparent 40%),
+    linear-gradient(
+        180deg,
+        #02030a 0%,
+        #08142c 20%,
+        #120b2f 40%,
+        #190d44 60%,
+        #08142c 80%,
+        #02030a 100%
+    );
+
+    background-size:cover;
+    background-attachment:fixed;
+    transition:background 0.5s ease;
 }
 
 @keyframes bg{
@@ -599,66 +613,85 @@ for(let uni in universities){
 
 /*
 =========================================
-HIỆU ỨNG TUYẾT RƠI (FALLING SNOW)
+MILKY WAY GALAXY BACKGROUND
 =========================================
 */
+
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let snowflakes = [];
+let stars = [];
 
-// Khởi tạo các hạt tuyết
-for(let i=0; i<150; i++){
-    snowflakes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 3 + 1,           // Kích thước ngẫu nhiên (bán kính từ 1 đến 4)
-        dy: Math.random() * 2 + 1,          // Tốc độ rơi
-        dx: Math.random() * 1 - 0.5,        // Hướng bay ngang (gió nhẹ)
-        opacity: Math.random() * 0.8 + 0.2  // Độ mờ ngẫu nhiên để tạo chiều sâu
+for(let i=0;i<1200;i++){
+    stars.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*2,
+        alpha:Math.random(),
+        speed:Math.random()*0.01
     });
 }
 
-function animate(){
+function drawGalaxy(){
+
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    snowflakes.forEach(p => {
-        // Cập nhật vị trí
-        p.y += p.dy;
-        p.x += p.dx;
+    const grad = ctx.createLinearGradient(
+        canvas.width*0.2,
+        canvas.height*0.1,
+        canvas.width*0.8,
+        canvas.height*0.9
+    );
 
-        // Nếu hạt tuyết rơi quá mép dưới màn hình, đưa nó vòng lên lại phía trên
-        if(p.y > canvas.height) {
-            p.y = -10;
-            p.x = Math.random() * canvas.width;
-        }
+    grad.addColorStop(0,"rgba(0,150,255,0)");
+    grad.addColorStop(0.3,"rgba(100,180,255,0.15)");
+    grad.addColorStop(0.5,"rgba(255,255,255,0.35)");
+    grad.addColorStop(0.7,"rgba(180,100,255,0.15)");
+    grad.addColorStop(1,"rgba(255,0,255,0)");
 
-        // Nếu hạt tuyết bay ra khỏi mép trái/phải, đưa vòng lại
-        if(p.x > canvas.width) p.x = 0;
-        if(p.x < 0) p.x = canvas.width;
+    ctx.save();
+    ctx.translate(canvas.width/2,canvas.height/2);
+    ctx.rotate(-0.4);
+    ctx.fillStyle = grad;
+    ctx.fillRect(
+        -canvas.width,
+        -100,
+        canvas.width*2,
+        200
+    );
+    ctx.restore();
 
-        // Vẽ hạt tuyết
+    stars.forEach(s=>{
+
+        s.alpha += Math.sin(Date.now()*s.speed)*0.002;
+
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,255,255,${Math.abs(s.alpha)})`;
         ctx.fill();
     });
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(drawGalaxy);
 }
 
-animate();
+drawGalaxy();
 
-// Cập nhật lại kích thước khi resize màn hình
+window.addEventListener("scroll",()=>{
+
+    const p =
+    window.scrollY /
+    (document.body.scrollHeight - window.innerHeight);
+
+    const hue = 220 + p*120;
+
+    document.body.style.filter =
+    `hue-rotate(${hue-220}deg)`;
+});
+
 window.addEventListener("resize",()=>{
     canvas.width=window.innerWidth;
     canvas.height=window.innerHeight;
 });
-
-</script>
-
-</body>
-</html>

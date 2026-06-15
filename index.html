@@ -599,6 +599,18 @@ for(let uni in universities){
     buttonContainer.appendChild(btn);
 }
 
+// Thay vì chỉ in text, hãy bọc nó trong <span> có màu
+const displayData = universities["PTIT: Học Viện CN Bưu Chính Viễn Thông"].map(item => {
+    // Kiểm tra nếu là dòng tiêu đề thì cho màu khác
+    if (item.includes("---")) {
+        return `<span style="color: blue; font-weight: bold;">${item}</span>`;
+    }
+    return `<span>${item}</span>`;
+});
+
+// Sau đó mới đưa vào trang web
+document.getElementById("container").innerHTML = displayData.join("<br>");
+    
 /*
 =========================================
 MILKY WAY GALAXY BACKGROUND
